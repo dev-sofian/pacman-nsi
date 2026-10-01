@@ -7,7 +7,7 @@ class Fantome:
         self.couleur = coul
         self.col = c
         self.lig = l
-        self.retour = (0, 0)
+        self.state = "None"
 
     def get_col(self) -> int:
         return self.col
@@ -29,24 +29,16 @@ class Fantome:
         Paramètres:
             tab (list): le labyrinthe
         """
-        delta = ((-1, 0, "gauche"), (1, 0, "droite"), (0, -1, "haut"), (0, 1, "bas"))
-        # récupère les positions de déplacements possibles
+        delta = ((-1, 0), (1, 0), (0, -1), (0, 1))
+                # récupère les positions de déplacements possibles
         possibles = []
-        for dx, dy, direct in delta:
+        for dx, dy in delta:
             x, y = self.col + dx, self.lig + dy
             if tab[y][x] != 0:
-                possibles.append((x, y, direct))
-        #print(possibles)
+                possibles.append((x, y))
         # choisit le déplacement
         choix = 0
         if len(possibles) > 1:
             choix = randint(0, len(possibles)-1)
-            if possibles[choix][2] != self.retour:
-                if self.retour == "gauche":
-                    if possibles[choix][2] == "droite":
-                        possibles.remove(choix)
-                        choix = randint(0, len(possibles)-1)
         self.col = possibles[choix][0]
         self.lig = possibles[choix][1]
-        self.retour = direct
-        #print(self.retour)

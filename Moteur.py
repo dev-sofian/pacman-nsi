@@ -9,8 +9,8 @@ class Moteur:
     def __init__(self):
         # initialisations des objets du jeu
         self.labyrinthe = self.initialiser_labyrinthe()
-        self.pacman = Pacman(24, 1)
-        self.un_fantome = Fantome(1, 1, 8)
+        self.pacman = Pacman(23, 1, 10)
+        self.fantomes = [Fantome(1,1,8)]
 
         # initialisation de pyxel
         pyxel.init(TAILLE*TAILLE_CEL, TAILLE*TAILLE_CEL, fps=5)
@@ -22,14 +22,7 @@ class Moteur:
         met à jour à chaque cycle de pyxel
         """
         self.update_fantomes()
-        if pyxel.btn(pyxel.KEY_LEFT):
-            self.update_pacman(-1, 0)
-        elif pyxel.btn(pyxel.KEY_RIGHT):
-            self.update_pacman(1, 0)
-        elif pyxel.btn(pyxel.KEY_UP):
-            self.update_pacman(0, -1)
-        elif pyxel.btn(pyxel.KEY_DOWN):
-            self.update_pacman(0, 1)
+        self.update_pacman()
 
 
     def draw(self):
@@ -38,8 +31,9 @@ class Moteur:
         """
         pyxel.cls(0)
         self.dessiner_labyrinthe()
-        self.dessiner_fantome(self.un_fantome)
-        self.dessiner_pacman
+        for fantome in self.fantomes:
+            self.dessiner_fantome(fantome)
+        self.dessiner_pacman(self.pacman)
 
     def initialiser_labyrinthe(self) -> list:
         """
@@ -60,18 +54,17 @@ class Moteur:
                         tableau[i].append(Pacgomme())
                     else:
                         tableau[i].append(int(lignes[i][j]))
-
         return tableau
 
     def update_fantomes(self) -> None:
         """
         bouge les fantômes
         """
-        self.un_fantome.choisir_dpct(self.labyrinthe)
+        for fantome in self.fantomes:
+            fantome.choisir_dpct(self.labyrinthe)
 
-    def update_pacman(self, posx, posy):
-        self.pacman.set_col(posx)
-        self.pacman.set_lig(posy)
+    def update_pacman(self):
+        self.pacman.choisir_dpct(self.labyrinthe)
 
     def dessiner_labyrinthe(self):
         for l in range(TAILLE):
@@ -107,7 +100,7 @@ class Moteur:
         c = pac.get_col()
         l = pac.get_lig()
         pyxel.blt(c*TAILLE_CEL, l*TAILLE_CEL, 0,
-                  TAILLE_CEL, 0, TAILLE_CEL, TAILLE_CEL, 0)
+                  0, 0, TAILLE_CEL, TAILLE_CEL, 0)
 
     def dessiner_pacgomme(self, c: int, l: int):
         pyxel.circ((c+0.5)*TAILLE_CEL, (l+0.5) *

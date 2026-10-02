@@ -1,5 +1,6 @@
 from constantes import *
-from random import randint, choice
+from random import randint
+from math import cos, sin, radians
 
 
 class Fantome:
@@ -7,7 +8,8 @@ class Fantome:
         self.couleur = coul
         self.col = c
         self.lig = l
-        self.retour = (0, 0)
+        self.dir = 0
+        self.peut_continuer = True
 
     def get_col(self) -> int:
         return self.col
@@ -29,24 +31,31 @@ class Fantome:
         Paramètres:
             tab (list): le labyrinthe
         """
-        delta = ((-1, 0, "gauche"), (1, 0, "droite"), (0, -1, "haut"), (0, 1, "bas"))
+        delta = ((-1, 0), (1, 0), (0, -1), (0, 1))
         # récupère les positions de déplacements possibles
         possibles = []
-        for dx, dy, direct in delta:
+        for dx, dy, in delta:
             x, y = self.col + dx, self.lig + dy
             if tab[y][x] != 0:
-                possibles.append((x, y, direct))
+                possibles.append((x, y))
         #print(possibles)
         # choisit le déplacement
         choix = 0
+
+        rad = radians(self.dir)
+
+        x, y = cos(rad) + self.col, sin(rad) + self.lig
+
+        while self.peut_continuer:
+            if not (x, y) in possibles:
+                self.peut_continuer = False
+                break
+            self.col += x
+            self.lig += y
+
         if len(possibles) > 1:
             choix = randint(0, len(possibles)-1)
-            if possibles[choix][2] != self.retour:
-                if self.retour == "gauche":
-                    if possibles[choix][2] == "droite":
-                        possibles.remove(choix)
-                        choix = randint(0, len(possibles)-1)
         self.col = possibles[choix][0]
         self.lig = possibles[choix][1]
-        self.retour = direct
+        self.peut_continuer = True
         #print(self.retour)
